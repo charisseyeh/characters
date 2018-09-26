@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
+  </head>
+  <body>
+    <form id="submissionForm">
+      Title: <input type="text" id="titletext"></input>
+      Dedication: <input type="text" id="dedicationtext"></input>
+    </form>
+      <button id="submit">Submit</button>
+    <div id="posts"> </div>
+    <script>
+      var config = {
+          apiKey: "AIzaSyAhDO9Pw_PWtSVTwNvbgEbrDC0RcLmk-ac",
+          authDomain: "characters-e23f6.firebaseapp.com",
+          databaseURL: "https://characters-e23f6.firebaseio.com",
+          projectId: "characters-e23f6",
+          storageBucket: "characters-e23f6.appspot.com",
+          messagingSenderId: "176966959927"
+      };
+
+      firebase.initializeApp(config);
+
+      var reloadData = function(){
+        $("#posts").empty();
+        db.collection("posts").get().then(posts => {
+          posts.forEach(post => {
+            $("#posts").append(JSON.stringify(post.data()));
+            $("#posts").append('<br />');
+          });
+        });
+      }
+
+      // Initialize Cloud Firestore through Firebase
+      var db = firebase.firestore();
+
+      // hook jquery click handler to the button
+      $('#submit').click(function(){
+        var titleTextValue = $('#titletext').val()
+        var dedicationTextValue = $('#dedicationtext').val()
+        console.log(titleTextValue)
+        console.log(dedicationTextValue)
+        db.collection("posts").add({
+          title: titleTextValue,
+          dedication: dedicationTextValue,
+          date: (new Date()).valueOf() // gets the milliseconds since epoch
+        }).then(function(){
+          window.location.href = 'read.html'
+        });
+      });
+
+      // when the document loads, write all posts to the webpage
+      $(document).ready(reloadData);
+    </script>
+  </body>
+</html>
